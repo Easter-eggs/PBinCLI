@@ -1,9 +1,9 @@
 import signal, sys
 from urllib.parse import parse_qsl
 
-from pbincli.api import Shortener
-from pbincli.format import Paste
-from pbincli.utils import PBinCLIError, check_writable, json_encode, uri_validator, validate_url_ending, validate_path_ending
+from eepastecli.api import Shortener
+from eepastecli.format import Paste
+from eepastecli.utils import EePasteCLIError, check_writable, json_encode, uri_validator, validate_url_ending, validate_path_ending
 
 
 def signal_handler(sig, frame):
@@ -24,7 +24,7 @@ def send(args, api_client, settings=None):
             print("Reading text from stdin…")
             text = args.stdin.read()
     elif not args.file:
-        PBinCLIError("Nothing to send!")
+        EePasteCLIError("Nothing to send!")
     else:
         text = ""
 
@@ -107,9 +107,9 @@ def send(args, api_client, settings=None):
                     passphrase))
 
     elif result['status']: # return code is other then zero
-        PBinCLIError("Something went wrong…\nError:\t\t{}".format(result['message']))
+        EePasteCLIError("Something went wrong…\nError:\t\t{}".format(result['message']))
     else: # or here no status field in response or it is empty
-        PBinCLIError("Something went wrong…\nError: Empty response.")
+        EePasteCLIError("Something went wrong…\nError: Empty response.")
 
     if settings['short']:
         print("\nQuerying URL shortening service…")
@@ -130,7 +130,7 @@ def get(args, api_client, settings=None):
         pasteid = parseduri.path
         passphrase = parseduri.fragment
     else:
-        PBinCLIError("Provided info hasn't contain valid URL or PasteID#Passphrase string")
+        EePasteCLIError("Provided info hasn't contain valid URL or PasteID#Passphrase string")
 
     if args.verbose: print("Used server: {}".format(api_client.getServer()))
     if args.debug: print("PasteID:\t{}\nPassphrase:\t{}".format(pasteid, passphrase))
@@ -198,9 +198,9 @@ def get(args, api_client, settings=None):
             api_client.delete(json_encode({'pasteid':pasteid,'deletetoken':'burnafterreading'}))
 
     elif result['status']: # return code is other then zero
-        PBinCLIError("Something went wrong…\nError:\t\t{}".format(result['message']))
+        EePasteCLIError("Something went wrong…\nError:\t\t{}".format(result['message']))
     else: # or here no status field in response or it is empty
-        PBinCLIError("Something went wrong…\nError: Empty response.")
+        EePasteCLIError("Something went wrong…\nError: Empty response.")
 
 
 def delete(args, api_client, settings=None):
@@ -216,7 +216,7 @@ def delete(args, api_client, settings=None):
         pasteid = query['pasteid']
         token = query['deletetoken']
     else:
-        PBinCLIError("Provided info hasn't contain required information")
+        EePasteCLIError("Provided info hasn't contain required information")
 
     if args.verbose: print("Used server: {}".format(api_client.getServer()))
     if args.debug: print("PasteID:\t{}\nToken:\t\t{}".format(pasteid, token))

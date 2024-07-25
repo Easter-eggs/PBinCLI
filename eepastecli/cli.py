@@ -5,19 +5,19 @@ from distutils.util import strtobool
 
 import argcomplete
 
-import pbincli.actions
-from pbincli.api import PrivateBin
-from pbincli.utils import PBinCLIException, PBinCLIError, validate_url_ending
+import eepastecli.actions
+from eepastecli.api import PrivateBin
+from eepastecli.utils import EePasteCLIException, EePasteCLIError, validate_url_ending
 
 CONFIG_PATHS = [
-    os.path.join(".", "pbincli.conf", ),
-    os.path.join(os.getenv("HOME") or "~", ".config", "pbincli", "pbincli.conf")
+    os.path.join(".", "ee-paste.conf", ),
+    os.path.join(os.getenv("HOME") or "~", ".config", "ee-paste", "ee-paste.conf")
 ]
 
 if sys.platform == "win32":
-    CONFIG_PATHS.append(os.path.join(os.getenv("APPDATA"), "pbincli", "pbincli.conf"))
+    CONFIG_PATHS.append(os.path.join(os.getenv("APPDATA"), "ee-paste", "ee-paste.conf"))
 elif sys.platform == "darwin":
-    CONFIG_PATHS.append(os.path.join(os.getenv("HOME") or "~", "Library", "Application Support", "pbincli", "pbincli.conf"))
+    CONFIG_PATHS.append(os.path.join(os.getenv("HOME") or "~", "Library", "Application Support", "ee-paste", "ee-paste.conf"))
 
 
 def read_config(filename):
@@ -34,7 +34,7 @@ def read_config(filename):
                 else:
                     settings[key.strip()] = value.strip()
             except ValueError:
-                PBinCLIError("Unable to parse config file, please check it for errors.")
+                EePasteCLIError("Unable to parse config file, please check it for errors.")
     return settings
 
 
@@ -67,7 +67,7 @@ def main():
     send_parser.add_argument("--short-pass", default=argparse.SUPPRESS, help="Shortener password")
     send_parser.add_argument("--short-token", default=argparse.SUPPRESS, help="Shortener token")
     ## Connection options
-    send_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.i2pd.xyz/)")
+    send_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.easter-eggs.com/)")
     send_parser.add_argument("-x", "--proxy", default=argparse.SUPPRESS, help="Proxy server address (default: None)")
     send_parser.add_argument("--no-check-certificate", default=argparse.SUPPRESS, action="store_true", help="Disable certificate validation")
     send_parser.add_argument("--no-insecure-warning", default=argparse.SUPPRESS, action="store_true",
@@ -84,7 +84,7 @@ def main():
     send_parser.add_argument("-d", "--debug", default=False, action="store_true", help="Enable debug output")
     send_parser.add_argument("--dry", default=False, action="store_true", help="Invoke dry run")
     send_parser.add_argument("stdin", help="Input paste text from stdin", nargs="?", type=argparse.FileType("r"), default=sys.stdin)
-    send_parser.set_defaults(func=pbincli.actions.send)
+    send_parser.set_defaults(func=eepastecli.actions.send)
 
     # a get command
     get_parser = subparsers.add_parser("get", description="Get data from PrivateBin instance")
@@ -92,7 +92,7 @@ def main():
     get_parser.add_argument("-p", "--password", help="Password for decrypting paste")
     get_parser.add_argument("-o", "--output", default=argparse.SUPPRESS, help="Path to directory where decoded paste data will be saved")
     ## Connection options
-    get_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.i2pd.xyz/, ignored if URL used in pasteinfo)")
+    get_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.easter-eggs.com/, ignored if URL used in pasteinfo)")
     get_parser.add_argument("-x", "--proxy", default=argparse.SUPPRESS, help="Proxy server address (default: None)")
     get_parser.add_argument("--no-check-certificate", default=argparse.SUPPRESS, action="store_true", help="Disable certificate validation")
     get_parser.add_argument("--no-insecure-warning", default=argparse.SUPPRESS, action="store_true",
@@ -106,13 +106,13 @@ def main():
     ##
     get_parser.add_argument("-v", "--verbose", default=False, action="store_true", help="Enable verbose output")
     get_parser.add_argument("-d", "--debug", default=False, action="store_true", help="Enable debug output")
-    get_parser.set_defaults(func=pbincli.actions.get)
+    get_parser.set_defaults(func=eepastecli.actions.get)
 
     # a delete command
     delete_parser = subparsers.add_parser("delete", description="Delete paste from PrivateBin instance")
     delete_parser.add_argument("pasteinfo", help="Paste deletion URL or string in \"pasteid=PasteID&deletetoken=Token\" format")
     ## Connection options
-    delete_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.i2pd.xyz/)")
+    delete_parser.add_argument("-s", "--server", default=argparse.SUPPRESS, help="Instance URL (default: https://paste.easter-eggs.com/)")
     delete_parser.add_argument("-x", "--proxy", default=argparse.SUPPRESS, help="Proxy server address (default: None)")
     delete_parser.add_argument("--no-check-certificate", default=argparse.SUPPRESS, action="store_true", help="Disable certificate validation")
     delete_parser.add_argument("--no-insecure-warning", default=argparse.SUPPRESS, action="store_true",
@@ -125,7 +125,7 @@ def main():
     ##
     delete_parser.add_argument("-v", "--verbose", default=False, action="store_true", help="Enable verbose output")
     delete_parser.add_argument("-d", "--debug", default=False, action="store_true", help="Enable debug output")
-    delete_parser.set_defaults(func=pbincli.actions.delete)
+    delete_parser.set_defaults(func=eepastecli.actions.delete)
 
     # Add argcomplete trigger
     argcomplete.autocomplete(parser)
@@ -135,7 +135,7 @@ def main():
 
     # default configuration
     CONFIG = {
-        'server': 'https://paste.i2pd.xyz/',
+        'server': 'https://paste.easter-eggs.com/',
         'mirrors': None,
         'proxy': None,
         'expire': '1day',
@@ -188,8 +188,8 @@ def main():
     if hasattr(args, "func"):
         try:
             args.func(args, api_client, settings=CONFIG)
-        except PBinCLIException as pe:
-            raise PBinCLIException("error: {}".format(pe))
+        except EePasteCLIException as pe:
+            raise EePasteCLIException("error: {}".format(pe))
     else:
         parser.print_help()
 

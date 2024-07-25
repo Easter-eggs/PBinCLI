@@ -8,4 +8,4 @@ COPY . .
 
 RUN python setup.py install
 
-ENTRYPOINT [ "/usr/local/bin/pbincli" ]
+ENTRYPOINT [ "/usr/local/bin/ee-paste" ]

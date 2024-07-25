@@ -1,5 +1,5 @@
 from base64 import b64encode, b64decode
-from pbincli.utils import PBinCLIError
+from eepastecli.utils import EePasteCLIError
 import zlib
 
 # try import AES cipher and check if it has GCM mode (prevent usage of pycrypto)
@@ -10,7 +10,7 @@ try:
             from Cryptodome.Cipher import AES
             from Cryptodome.Random import get_random_bytes
         except ImportError:
-            PBinCLIError("AES GCM mode is not found in imported crypto module.\n" +
+            EePasteCLIError("AES GCM mode is not found in imported crypto module.\n" +
                 "That can happen if you have installed pycrypto.\n\n" +
                 "We tried to import pycryptodomex but it is not available.\n" +
                 "Please install it via pip, if you still need pycrypto, by running:\n" +
@@ -24,7 +24,7 @@ except ImportError:
         from Cryptodome.Cipher import AES
         from Cryptodome.Random import get_random_bytes
     except ImportError:
-        PBinCLIError("Unable import pycryptodome")
+        EePasteCLIError("Unable import pycryptodome")
 
 
 CIPHER_ITERATION_COUNT = 100000
@@ -64,7 +64,7 @@ class Paste:
 
 
     def setAttachment(self, path):
-        from pbincli.utils import check_readable, path_leaf
+        from eepastecli.utils import check_readable, path_leaf
         from mimetypes import guess_type
 
         check_readable(path)
@@ -97,7 +97,7 @@ class Paste:
 
     def getJSON(self):
         if self._version == 2:
-            from pbincli.utils import json_encode
+            from eepastecli.utils import json_encode
             return json_encode(self._data).decode()
         else:
             return self._data
@@ -132,7 +132,7 @@ class Paste:
                 from Cryptodome.Protocol.KDF import PBKDF2
                 from Cryptodome.Hash import HMAC, SHA256
             except ImportError:
-                PBinCLIError("Unable import pycryptodome")
+                EePasteCLIError("Unable import pycryptodome")
 
         # Key derivation, using PBKDF2 and SHA256 HMAC
         return PBKDF2(
@@ -149,7 +149,7 @@ class Paste:
 
     @classmethod
     def __initializeCipher(self, key, iv, adata, tagsize):
-        from pbincli.utils import json_encode
+        from eepastecli.utils import json_encode
 
         cipher = AES.new(key, AES.MODE_GCM, nonce=iv, mac_len=tagsize)
         cipher.update(json_encode(adata))
@@ -176,7 +176,7 @@ class Paste:
         elif self._version == 1:
             return zlib.decompress(bytearray(map(lambda c:ord(c)&255, b64decode(s.encode('utf-8')).decode('utf-8'))), -zlib.MAX_WBITS)
         else:
-            PBinCLIError('Unknown compression type provided in paste!')
+            EePasteCLIError('Unknown compression type provided in paste!')
 
 
     def __compress(self, s):
@@ -193,7 +193,7 @@ class Paste:
             b = co.compress(s) + co.flush()
             return b64encode(''.join(map(chr, b)).encode('utf-8'))
         else:
-            PBinCLIError('Unknown compression type provided!')
+            EePasteCLIError('Unknown compression type provided!')
 
 
     def decrypt(self):
@@ -271,7 +271,7 @@ class Paste:
 
 
     def _encryptV2(self):
-        from pbincli.utils import json_encode
+        from eepastecli.utils import json_encode
 
         if self._debug: print("[Enc] Preparing IV, Salt…")
         iv = get_random_bytes(int(self._tag_bits / 8))
@@ -313,7 +313,7 @@ class Paste:
 
     def _encryptV1(self):
         from sjcl import SJCL
-        from pbincli.utils import json_encode
+        from eepastecli.utils import json_encode
 
         self._data = {'expire':self._expiration,'formatter':self._formatter,
             'burnafterreading':int(self._burnafterreading),'opendiscussion':int(self._discussion)}

@@ -1,6 +1,6 @@
 import requests
 from requests import HTTPError
-from pbincli.utils import PBinCLIError
+from eepastecli.utils import EePasteCLIError
 
 def _config_requests(settings=None, shortener=False):
     if settings['no_insecure_warning']:
@@ -18,7 +18,7 @@ def _config_requests(settings=None, shortener=False):
             auth = json_loads(settings['auth_custom'])
             session.headers.update(auth)
         else:
-            PBinCLIError("Incorrect authorization configuration")
+            EePasteCLIError("Incorrect authorization configuration")
 
     if settings['proxy']:
         scheme = settings['proxy'].split('://')[0]
@@ -49,7 +49,7 @@ class PrivateBin:
         try:
             return result.json()
         except ValueError:
-            PBinCLIError("Unable parse response as json. Received (size = {}):\n{}".format(len(result.text), result.text))
+            EePasteCLIError("Unable parse response as json. Received (size = {}):\n{}".format(len(result.text), result.text))
 
 
     def get(self, request):
@@ -75,9 +75,9 @@ class PrivateBin:
         if not result['status']:
             print("Paste successfully deleted!")
         elif result['status']:
-            PBinCLIError("Something went wrong...\nError:\t\t{}".format(result['message']))
+            EePasteCLIError("Something went wrong...\nError:\t\t{}".format(result['message']))
         else:
-            PBinCLIError("Something went wrong...\nError: Empty response.")
+            EePasteCLIError("Something went wrong...\nError: Empty response.")
 
 
     def getVersion(self):
@@ -92,7 +92,7 @@ class PrivateBin:
                     '@value' in jsonldSchema['@context']['v']) \
                 else 1
         except ValueError:
-            PBinCLIError("Unable parse response as json. Received (size = {}):\n{}".format(len(result.text), result.text))
+            EePasteCLIError("Unable parse response as json. Received (size = {}):\n{}".format(len(result.text), result.text))
 
 
     def getServer(self):
@@ -107,7 +107,7 @@ class Shortener:
         self.api = settings['short_api']
 
         if self.api is None:
-            PBinCLIError("Unable to activate link shortener without short_api.")
+            EePasteCLIError("Unable to activate link shortener without short_api.")
 
         # we checking which service is used, because some services doesn't require
         # any authentication, or have only one domain on which it working
@@ -123,7 +123,7 @@ class Shortener:
 
     def _yourls_init(self, settings):
         if not settings['short_url']:
-            PBinCLIError("YOURLS: An API URL is required")
+            EePasteCLIError("YOURLS: An API URL is required")
 
         # setting API URL
         apiurl = settings['short_url']
@@ -132,7 +132,7 @@ class Shortener:
         elif apiurl.endswith('/'):
             self.apiurl = apiurl + 'yourls-api.php'
         else:
-            PBinCLIError("YOURLS: Incorrect URL is provided.\n" +
+            EePasteCLIError("YOURLS: Incorrect URL is provided.\n" +
                 "It must contain full address to 'yourls-api.php' script (like https://example.com/yourls-api.php)\n" +
                 "or just contain instance URL with '/' at the end (like https://example.com/)")
 
@@ -144,7 +144,7 @@ class Shortener:
         elif settings['short_user'] is None and settings['short_pass'] is None and settings['short_token'] is None:
             self.auth_args = {}
         else:
-            PBinCLIError("YOURLS: either username and password or token are required. Otherwise set to default (None)")
+            EePasteCLIError("YOURLS: either username and password or token are required. Otherwise set to default (None)")
 
 
     def _gd_init(self):
@@ -152,7 +152,7 @@ class Shortener:
             self.apiurl = 'https://is.gd/'
         else:
             self.apiurl = 'https://v.gd/'
-        self.useragent = 'Mozilla/5.0 (compatible; pbincli - https://github.com/r4sas/pbincli/)'
+        self.useragent = 'Mozilla/5.0 (compatible; eepastecli - https://github.com/r4sas/eepastecli/)'
 
 
     def getlink(self, url):
@@ -184,21 +184,21 @@ class Shortener:
             try:
                 response = result.json()
             except ValueError:
-                PBinCLIError("YOURLS: Unable parse response. Received (size = {}):\n{}".format(len(result.text), result.text))
+                EePasteCLIError("YOURLS: Unable parse response. Received (size = {}):\n{}".format(len(result.text), result.text))
             else:
-                PBinCLIError("YOURLS: Received error from API: {} with JSON {}".format(result, response))
+                EePasteCLIError("YOURLS: Received error from API: {} with JSON {}".format(result, response))
         else:
             response = result.json()
 
             if {'status', 'statusCode', 'message'} <= set(response.keys()):
                 if response['status'] == 'fail':
-                    PBinCLIError("YOURLS: Received error from API: {}".format(response['message']))
+                    EePasteCLIError("YOURLS: Received error from API: {}".format(response['message']))
                 if not 'shorturl' in response:
-                    PBinCLIError("YOURLS: Unknown error: {}".format(response['message']))
+                    EePasteCLIError("YOURLS: Unknown error: {}".format(response['message']))
                 else:
                     print("Short Link:\t{}".format(response['shorturl']))
             else:
-                PBinCLIError("YOURLS: No status, statusCode or message fields in response! Received:\n{}".format(response))
+                EePasteCLIError("YOURLS: No status, statusCode or message fields in response! Received:\n{}".format(response))
 
 
     def _clckru(self, url):
@@ -210,7 +210,7 @@ class Shortener:
                 data = request)
             print("Short Link:\t{}".format(result.text))
         except Exception as ex:
-            PBinCLIError("clck.ru: unexcepted behavior: {}".format(ex))
+            EePasteCLIError("clck.ru: unexcepted behavior: {}".format(ex))
 
 
     def _tinyurl(self, url):
@@ -222,7 +222,7 @@ class Shortener:
                 data = request)
             print("Short Link:\t{}".format(result.text))
         except Exception as ex:
-            PBinCLIError("TinyURL: unexcepted behavior: {}".format(ex))
+            EePasteCLIError("TinyURL: unexcepted behavior: {}".format(ex))
 
 
     def _gd(self, url):
@@ -244,13 +244,13 @@ class Shortener:
             if 'shorturl' in response:
                 print("Short Link:\t{}".format(response['shorturl']))
             else:
-                PBinCLIError("{}: got error {} from API: {}".format(
+                EePasteCLIError("{}: got error {} from API: {}".format(
                     "is.gd" if self.api == 'isgd' else 'v.gd',
                     response['errorcode'],
                     response['errormessage']))
 
         except Exception as ex:
-            PBinCLIError("{}: unexcepted behavior: {}".format(
+            EePasteCLIError("{}: unexcepted behavior: {}".format(
                 "is.gd" if self.api == 'isgd' else 'v.gd',
                 ex))
 
@@ -267,12 +267,12 @@ class Shortener:
                 data = request)
             print("Short Link:\t{}".format(result.text))
         except Exception as ex:
-            PBinCLIError("cutt.ly: unexcepted behavior: {}".format(ex))
+            EePasteCLIError("cutt.ly: unexcepted behavior: {}".format(ex))
 
 
     def _custom(self, url):
         if self.apiurl is None:
-            PBinCLIError("No short_url specified - link will not be shortened.")
+            EePasteCLIError("No short_url specified - link will not be shortened.")
 
         from urllib.parse import quote
         qUrl = quote(url, safe="") # urlencoded paste url
@@ -283,4 +283,4 @@ class Shortener:
                 url = rUrl)
             print("Short Link:\t{}".format(result.text))
         except Exception as ex:
-            PBinCLIError("Shorter: unexcepted behavior: {}".format(ex))
+            EePasteCLIError("Shorter: unexcepted behavior: {}".format(ex))

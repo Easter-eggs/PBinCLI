@@ -1,24 +1,20 @@
 
 
-.. image:: https://img.shields.io/github/license/r4sas/PBinCLI.svg
-   :target: https://github.com/r4sas/PBinCLI/blob/master/LICENSE
+.. image:: https://img.shields.io/gitlab/license/ee/ee-paste-cli.svg?gitlab_url=https://gitlab.easter-eggs.com
+   :target: https://gitlab.easter-eggs.com/ee/ee-paste-cli/blob/master/LICENSE
    :alt: GitHub license
 
 
-.. image:: https://img.shields.io/github/tag/r4sas/PBinCLI.svg
-   :target: https://github.com/r4sas/PBinCLI/tags/
+.. image:: https://img.shields.io/gitlab/v/tag/ee/ee-paste-cli.svg?gitlab_url=https://gitlab.easter-eggs.com
+   :target: https://gitlab.easter-eggs.com/ee/ee-paste-cli/tags/
    :alt: GitHub tag
 
 
-.. image:: https://app.codacy.com/project/badge/Grade/4f24f43356a84621bbd9078c4b3f1b70
-   :target: https://www.codacy.com/gh/r4sas/PBinCLI/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=r4sas/PBinCLI&amp;utm_campaign=Badge_Grade
-   :alt: Codacy Badge
-
-
-PBinCLI
+Ee Paste CLI
 =======
 
-PBinCLI is a command line client for `PrivateBin <https://github.com/PrivateBin/PrivateBin/>`_ written in Python 3.
+Ee Paste CLI is a command line client [PrivateBin](https://github.com/PrivateBin/PrivateBin/) written in Python 3,
+defaulty configured to use [Easter-eggs instance](https://paste.easter-eggs.com). It's based on [PBinCLI](https://github.com/r4sas/PBinCLI).
 
 Installation
 ============
@@ -27,7 +23,7 @@ Installing globally using pip3:
 
 .. code-block:: bash
 
-   pip3 install pbincli
+   python3 -m pip install -U git+https://gitlab.easter-eggs.com/ee/ee-paste-cli.git@ee
 
 Installing with ``virtualenv``\ :
 
@@ -35,25 +31,25 @@ Installing with ``virtualenv``\ :
 
    python3 -m virtualenv --python=python3 venv
    . venv/bin/activate
-   pip install pbincli
+   python3 -m pip install -U git+https://gitlab.easter-eggs.com/ee/ee-paste-cli.git@ee
 
 *Note*\ : if you used ``virtualenv`` installation method, don't forget to activate your virtual environment before running the tool: call ``. /path/to/venv/bin/activate`` in terminal
 
 Configuration
 =============
 
-By default PBinCLI is configured to use ``https://paste.i2pd.xyz/`` for sending and receiving pastes. No proxy is used by default.
+By default ee-paste-cli is configured to use `https://paste.easter-eggs.com/` for sending and receiving pastes. No proxy is used by default.
 
 You can always create a config file to use different settings.
 
-Configuration file is expected to be found in ``~/.config/pbincli/pbincli.conf``\ , ``%APPDATA%/pbincli/pbincli.conf`` (Windows) and ``~/Library/Application Support/pbincli/pbincli.conf`` (MacOS)
+Configuration file is expected to be found in ``~/.config/ee-paste/ee-paste.conf``\ , ``%APPDATA%/ee-paste/ee-paste.conf`` (Windows) and ``~/Library/Application Support/ee-paste/ee-paste.conf`` (MacOS)
 
 Example of config file content
 ------------------------------
 
 .. code-block:: ini
 
-   server=https://paste.i2pd.xyz/
+   server=https://paste.easter-eggs.com/
    proxy=http://127.0.0.1:3128
 
 List of OPTIONS available
@@ -66,7 +62,7 @@ List of OPTIONS available
      - Default
      - Possible value
    * - server
-     - https://paste.i2pd.xyz/
+     - https://paste.easter-eggs.com/
      - Domain ending with slash
    * - mirrors
      - None
@@ -133,50 +129,50 @@ List of OPTIONS available
 Usage
 =====
 
-PBinCLI tool is started with ``pbincli`` command. Detailed help on command usage is provided with ``-h`` option:
+EePasteCLI tool is started with `ee-paste` command. Detailed help on command usage is provided with ``-h`` option:
 
 .. code-block:: bash
 
-   pbincli {send|get|delete} -h
+   ee-paste {send|get|delete} -h
 
 Sending
 -------
 
 
-* 
+*
   Sending text:
 
   .. code-block:: bash
 
-     pbincli send -t "Hello! This is a test paste!"
+     ee-paste send -t "Hello! This is a test paste!"
 
-* 
+*
   Using stdin input to read text into a paste:
 
   .. code-block:: bash
 
-     pbincli send - <<EOF
+     ee-paste send - <<EOF
      Hello! This is a test paste!
      EOF
 
-* 
+*
   Sending a file with text attached into a paste:
 
   .. code-block:: bash
 
-     pbincli send -f info.pdf -t "I'm sending my document."
+     ee-paste send -f info.pdf -t "I'm sending my document."
 
-* 
+*
   Sending a file only with no text attached:
 
   .. code-block:: bash
 
-     pbincli send -q -f info.pdf
+     ee-paste send -q -f info.pdf
 
 Other options
 ^^^^^^^^^^^^^
 
-It is also possible to set-up paste parameters such as "burn after reading", expiritaion time, formatting, enabling discussions and changing compression algorithm. Please refer to ``pbincli send -h`` output for more information.
+It is also possible to set-up paste parameters such as "burn after reading", expiritaion time, formatting, enabling discussions and changing compression algorithm. Please refer to ``ee-paste send -h`` output for more information.
 
 Receiving
 ---------
@@ -187,8 +183,8 @@ Paste info must be formated as ``pasteID#Passphrase`` or just use full URL to a 
 
 .. code-block:: bash
 
-   pbincli get "xxx#yyy"                        ### receive paste xxx from https://paste.i2pd.xyz/ by default
-   pbincli get "https://example.com/?xxx#yyy"   ### receive paste xxx from https://example.com/
+   ee-paste get "xxx#yyy"                        ### receive paste xxx from https://paste.easter-eggs.com/ by default
+   ee-paste get "https://example.com/?xxx#yyy"   ### receive paste xxx from https://example.com/
 
 Deletion
 --------
@@ -197,8 +193,8 @@ To delete a paste from a server, use ``delete`` command with paste info:
 
 .. code-block:: bash
 
-   pbincli delete "pasteid=xxx&deletetoken=yyy"                        ### delete paste xxx from https://paste.i2pd.xyz/ by default
-   pbincli delete "https://example.com/?pasteid=xxx&deletetoken=yyy"   ### delete paste xxx from https://example.com/
+   ee-paste delete "pasteid=xxx&deletetoken=yyy"                        ### delete paste xxx from https://paste.easter-eggs.com/ by default
+   ee-paste delete "https://example.com/?pasteid=xxx&deletetoken=yyy"   ### delete paste xxx from https://example.com/
 
 If you need to delete a paste on different server than the configured one, use ``-s`` option together with the instance URL.
 
@@ -224,11 +220,11 @@ Example of alias to send a paste from ``stdin`` direclty to I2P service:
 
 .. code-block:: bash
 
-   alias pastei2p="echo 'paste the text to stdin' && pbincli send -s http://privatebin.i2p/ -x http://127.0.0.1:4444 -"
+   alias pastei2p="echo 'paste the text to stdin' && ee-paste send -s http://privatebin.i2p/ -x http://127.0.0.1:4444 -"
 
 Call it by running ``pastei2p`` in terminal.
 
 License
 =======
 
-This project is licensed under the MIT license, which can be found in the file `LICENSE <https://github.com/r4sas/PBinCLI/blob/master/LICENSE>`_ in the root of the project source code.
+This project is licensed under the MIT license, which can be found in the file `LICENSE <https://gitlab.easter-eggs.com/ee/ee-paste-cli/blob/master/LICENSE>`_ in the root of the project source code.

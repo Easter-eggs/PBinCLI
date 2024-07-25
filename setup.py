@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-from pbincli.__init__ import __version__ as pbincli_version
+from eepastecli.__init__ import __version__ as eepastecli_version
 
 with open("README.rst") as readme:
     long_description = readme.read()
@@ -10,14 +10,14 @@ with open("requirements.txt") as f:
     install_requires = f.read().split()
 
 setup(
-    name='PBinCLI',
-    version=pbincli_version,
-    description='PrivateBin client for command line',
+    name='EePasteCLI',
+    version=eepastecli_version,
+    description='Easter-eggs PrivateBin instance client for command line (based on pbincli)',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    author='R4SAS',
-    author_email='r4sas@i2pmail.org',
-    url='https://github.com/r4sas/PBinCLI/',
+    author='Easter-eggs',
+    author_email='info@easter-eggs.com',
+    url='https://gitlab.easter-eggs.com/ee/ee-paste-cli/',
     keywords='privatebin cryptography security',
     license='MIT',
     classifiers=[
@@ -29,16 +29,16 @@ setup(
         'Topic :: Security :: Cryptography',
         'Topic :: Utilities',
     ],
-    packages=['pbincli'],
+    packages=['eepastecli'],
     install_requires=install_requires,
     python_requires='>=3',
     entry_points={
         'console_scripts': [
-            'pbincli=pbincli.cli:main',
+            'ee-paste=eepastecli.cli:main',
         ],
     },
     project_urls={
-        'Bug Reports': 'https://github.com/r4sas/PBinCLI/issues',
-        'Source': 'https://github.com/r4sas/PBinCLI/',
+        'Bug Reports': 'https://gitlab.easter-eggs.com/ee/ee-paste-cli/issues',
+        'Source': 'https://gitlab.easter-eggs.com/ee/ee-paste-cli/',
     },
 )
